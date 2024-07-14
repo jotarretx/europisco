@@ -7,3 +7,4 @@
 # data
 /data
 /processed
+__pycache__
