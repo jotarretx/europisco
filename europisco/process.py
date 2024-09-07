@@ -1,16 +1,21 @@
 """
 Script principal de limpieza y generación de mapa
 """
+import sys
+import os
 import pandas as pd
 import folium
 from geopy.geocoders import Nominatim
 from geopy.extra.rate_limiter import RateLimiter
-# from folium.plugins import Search
-from utils import add_missing_geocode, add_marker
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from europisco.utils import add_missing_geocode, add_marker
 
 print("Comienzo del proceso de limpieza y creación de mapa")
 # Leemos los datos pre-procesados del formulario
-df = pd.read_csv("data/europisco.csv")
+try:
+    df = pd.read_csv("data/europisco.csv")
+except FileNotFoundError:
+    raise FileNotFoundError("No existe archivo 'europisco.csv' o carpeta data")
 
 # Eliminamos columnas con información confidencial
 df.drop(columns=["Email Address", "Cuál es tu correo? (opcional)"], inplace=True)
@@ -19,10 +24,10 @@ df.drop(columns=["Email Address", "Cuál es tu correo? (opcional)"], inplace=Tru
 df.rename(
     columns={
         "Timestamp": "timestamp",
-        "Cúal es la dirección exacta (o más aproximada) dónde viste el pisco?": "address_raw",
+        "Cúal es la dirección exacta (o más aproximada) dónde viste el pisco/restaurante?": "address_raw",
         "En qué país?": "country",
-        "Qué era específicamente?": "pisco_type",
-        "Cúanto costaba aproximadamente (en euros)?": "price",
+        "Qué era específicamente?": "category",
+        "Cúanto costaba aproximadamente el pisco (en euros)?": "price",
         "Cuál es tu nombre? (opcional)": "name",
         "Probable address": "address_clean"
     },
@@ -33,6 +38,11 @@ df.rename(
 df.dropna(subset=['address_clean'], inplace=True)
 
 df.reset_index(inplace=True, drop=True)
+
+# Quitamos direcciones duplicadas y nos quedamos con la primera
+print("Antes de quitar duplicados:",df.shape[0])
+df.drop_duplicates(["category","address_clean"], keep="first", inplace= True)
+print("Sin duplicados:",df.shape[0])
 
 # Agregamos información de geolocalización
 geolocator = Nominatim(user_agent="BuscandoElPisco")
@@ -55,10 +65,10 @@ print("Tabla limpiada para subir a Google guardada en /processed...")
 m = folium.Map(location=[54.5260, 15.2551], zoom_start=4)
 
 # Definimos tipos de pisco
-pisco_types = ["Botella", "Piscola", "Pisco Sour"]
+categories = ["Botella", "Piscola", "Pisco Sour"]
 
 # Creamos un grupo por cada tipo y combinación de tipo
-feature_groups = {ptype: folium.FeatureGroup(name=ptype).add_to(m) for ptype in pisco_types}
+feature_groups = {ptype: folium.FeatureGroup(name=ptype).add_to(m) for ptype in categories}
 
 # Aplicamos función para agregar marcadores al mapa
 df.apply(add_marker, args=(feature_groups,), axis=1)

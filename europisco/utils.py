@@ -45,6 +45,38 @@ def add_missing_geocode(df: pd.DataFrame) -> pd.DataFrame:
     df.loc[88, "longitude"] = 1.4355332133343959
     df.loc[113, "latitude"] = 40.41763629833717
     df.loc[113, "longitude"] = -3.704811116568445
+    df.loc[120, "latitude"] = 51.51430664403254
+    df.loc[120, "longitude"] = -0.17540551511112104
+    df.loc[121, "latitude"] = 41.554654136702574
+    df.loc[121, "longitude"] = 2.0986853875424276
+    df.loc[122, "latitude"] = 53.347946518816215
+    df.loc[122, "longitude"] = -6.261642988640728
+    df.loc[144, "latitude"] = 41.886411780046295
+    df.loc[144, "longitude"] = 12.472420643711015
+    df.loc[156, "latitude"] = 39.962617683800325
+    df.loc[156, "longitude"] = -4.817903422418324
+    df.loc[164, "latitude"] = 36.722722720729806
+    df.loc[164, "longitude"] = -4.421907362981686
+    df.loc[168, "latitude"] = 52.335601064944704
+    df.loc[168, "longitude"] = -6.459070773663258
+    df.loc[174, "latitude"] = 51.51430664403254
+    df.loc[174, "longitude"] = -0.17540551511112104
+    df.loc[183, "latitude"] = 47.56107982868368
+    df.loc[183, "longitude"] = 7.592640489055312
+    df.loc[187, "latitude"] = 52.41953431610891
+    df.loc[187, "longitude"] = 9.792439901292278
+    df.loc[193, "latitude"] = 52.62872890971545
+    df.loc[193, "longitude"] = 1.292831732093453
+    df.loc[195, "latitude"] = 53.347946518816215
+    df.loc[195, "longitude"] = -6.261642988640728
+    df.loc[203, "latitude"] = 40.40772969233442
+    df.loc[203, "longitude"] = -3.703651318600535
+    df.loc[204, "latitude"] = 51.51430664403254
+    df.loc[204, "longitude"] = -0.17540551511112104
+    df.loc[213, "latitude"] = 53.34086289380278
+    df.loc[213, "longitude"] = -6.244776361603958
+    df.loc[214, "latitude"] = 50.81501521279863
+    df.loc[214, "longitude"] = 4.367106972592874
 
     return df
 
@@ -56,12 +88,12 @@ def add_marker(row:pd.Series, feature_groups: dict):
         row (pd.Series): Fila con la información de cada registro.
         feature_groups(dict): Diccionario con tipos de pisco y combinaciones.
     """
-    popup_text = f"Tipo: {row['pisco_type']}<br>Precio: {row['price']}<br>Subido por: {row['name']}<br>Dirección: {row['address_clean']}"
-    pisco_types_in_row = row['pisco_type'].split(", ")
-    for pisco_type in pisco_types_in_row:
-        if pisco_type in feature_groups:
+    popup_text = f"Tipo: {row['category']}<br>Precio: {row['price']}<br>Subido por: {row['name']}<br>Dirección: {row['address_clean']}"
+    categories_in_row = row['category'].split(", ")
+    for category in categories_in_row:
+        if category in feature_groups:
             folium.Marker(
                 location=[row['latitude'], row['longitude']],
                 popup=popup_text,
-                tooltip=row['pisco_type']
-            ).add_to(feature_groups[pisco_type])
+                tooltip=row['category']
+            ).add_to(feature_groups[category])
