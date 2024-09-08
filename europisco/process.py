@@ -57,6 +57,11 @@ df['longitude'] = df['location'].apply(lambda loc: loc.longitude if loc else Non
 df = add_missing_geocode(df)
 
 # Generamos la tabla ya limpiada para usar con Google My Maps
+df_pisco = df[df["category"] != "Restaurante"].copy()
+df_restaurante = df[df["category"] == "Restaurante"].copy()
+
+df_pisco.to_csv("./processed/pisco.csv", index=False)
+df_restaurante.to_csv("./processed/restaurante.csv", index=False)
 df.to_csv("./processed/europisco_location.csv", index=False)
 print("Tabla limpiada para subir a Google guardada en /processed...")
 
